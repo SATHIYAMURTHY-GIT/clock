@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Neon Digital Clock</title>
 
-  <!-- Optional: stylish techno font (remove if you want no external loads) -->
+  <!-- Optional: stylish techno font -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      /* Tweak these to change the glow color + intensity */
       --neon: #12f7ff;
       --neon-secondary: #a0f;
       --glow-1: 0 0 6px var(--neon);
@@ -38,7 +37,6 @@
       overflow: hidden;
     }
 
-    /* Subtle drifting grid to sell the “digital” vibe */
     .grid {
       position: fixed;
       inset: 0;
@@ -137,7 +135,6 @@
     button:hover, select:hover { background: rgba(255,255,255,0.10) }
     button:active { transform: translateY(1px) }
 
-    /* Small accent line under the clock */
     .underline {
       margin: 14px auto 0;
       width: 120px;
@@ -147,7 +144,6 @@
       opacity: 0.9;
     }
 
-    /* Accessibility helpers */
     .sr-only {
       position: absolute !important;
       width: 1px; height: 1px;
@@ -196,11 +192,9 @@
 
       let is24Hour = true;
 
-      // Helper: zero-pad to 2 digits
       const pad2 = n => String(n).padStart(2, '0');
 
       function formatDate(d) {
-        // Use locale-aware long date
         return d.toLocaleDateString(undefined, {
           weekday: 'long',
           year: 'numeric',
@@ -217,18 +211,17 @@
         let ampm = '';
         if (!is24Hour) {
           ampm = h >= 12 ? 'PM' : 'AM';
-          h = h % 12 || 12; // 0->12
+          h = h % 12 || 12;
         }
 
-        $time.textContent = ${pad2(h)}:${pad2(m)}:${pad2(s)};
+        // ✅ Fixed line
+        $time.textContent = `${pad2(h)}:${pad2(m)}:${pad2(s)}`;
         $ampm.textContent = ampm;
         $date.textContent = formatDate(now);
 
-        // Accessibility: full spoken string
         $a11y.textContent = now.toLocaleString();
       }
 
-      // Keep the clock aligned to the real second boundary
       function tickAligned() {
         const now = new Date();
         render(now);
@@ -239,22 +232,18 @@
         }, delay);
       }
 
-      // UI: 12/24-hour toggle
       $btn.addEventListener('click', () => {
         is24Hour = !is24Hour;
         $btn.textContent = is24Hour ? '24-Hour' : '12-Hour';
         render(new Date());
       });
 
-      // UI: color picker updates CSS variables for glow
       $pick.addEventListener('change', (e) => {
         const c = e.target.value;
         document.documentElement.style.setProperty('--neon', c);
-        // Shift secondary to a complementary-ish hue for a nicer blend
         document.documentElement.style.setProperty('--neon-secondary', c);
       });
 
-      // Initial paint + start ticking
       render(new Date());
       tickAligned();
     })();
